@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSS3 Showcase</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* ── CSS Variables ── */
+    :root {
+      --bg:       #0a0a0f;
+      --surface:  #13131c;
+      --card:     #1a1a28;
+      --accent:   #f0c040;
+      --accent2:  #e05a5a;
+      --accent3:  #5af0c0;
+      --text:     #e8e4d8;
+      --muted:    #7a7870;
+      --border:   rgba(240,192,64,.18);
+      --ff-head:  'Playfair Display', serif;
+      --ff-mono:  'Space Mono', monospace;
+      --ff-body:  'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--ff-body);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ────────────────────────────────
+       NOISE TEXTURE OVERLAY
+    ──────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 999; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: .45;
+    }
+
+    /* ────────────────────────────────
+       HERO
+    ──────────────────────────────── */
+    header {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      position: relative;
+      padding: 6rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    /* Animated gradient mesh background */
+    header::after {
+      content: '';
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 40%, rgba(240,192,64,.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 80% 60%, rgba(90,240,192,.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 60% 20%, rgba(224,90,90,.07) 0%, transparent 70%);
+      animation: meshDrift 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes meshDrift {
+      0%   { transform: scale(1)   translate(0, 0); }
+      50%  { transform: scale(1.05) translate(-2%, 1%); }
+      100% { transform: scale(1)   translate(2%, -1%); }
+    }
+
+    /* Diagonal stripe decoration */
+    .hero-stripe {
+      position: absolute; top: 0; right: -10%; width: 55%; height: 100%;
+      background: repeating-linear-gradient(
+        -60deg,
+        transparent 0px, transparent 18px,
+        rgba(240,192,64,.03) 18px, rgba(240,192,64,.03) 19px
+      );
+      z-index: 1;
+      animation: stripeSlide 20s linear infinite;
+    }
+
+    @keyframes stripeSlide {
+      0%   { background-position: 0 0; }
+      100% { background-position: 100px 200px; }
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 900px; margin: 0 auto;
+    }
+
+    .hero-tag {
+      font-family: var(--ff-mono);
+      font-size: .72rem; letter-spacing: .25em;
+      color: var(--accent3); text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: inline-flex; align-items: center; gap: .6rem;
+      animation: fadeSlideUp .8s ease both;
+    }
+
+    .hero-tag::before {
+      content: ''; display: inline-block;
+      width: 28px; height: 1px; background: var(--accent3);
+    }
+
+    h1 {
+      font-family: var(--ff-head);
+      font-size: clamp(3rem, 9vw, 7.5rem);
+      line-height: 1.05;
+      font-weight: 700;
+      animation: fadeSlideUp .8s .15s ease both;
+    }
+
+    h1 em {
+      font-style: italic; color: var(--accent);
+      display: block;
+    }
+
+    .hero-sub {
+      font-size: clamp(.95rem, 2vw, 1.15rem);
+      color: var(--muted); max-width: 520px;
+      margin: 1.8rem 0 2.8rem;
+      animation: fadeSlideUp .8s .3s ease both;
+    }
+
+    .btn-row {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      animation: fadeSlideUp .8s .45s ease both;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: .6rem;
+      padding: .8rem 2rem; font-family: var(--ff-mono);
+      font-size: .78rem; letter-spacing: .1em;
+      text-transform: uppercase; text-decoration: none;
+      border: none; cursor: pointer;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent); color: #0a0a0f;
+      font-weight: 700;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 32px rgba(240,192,64,.35);
+    }
+
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent3);
+      color: var(--accent3);
+      box-shadow: 0 8px 24px rgba(90,240,192,.1);
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      font-family: var(--ff-mono); font-size: .65rem;
+      color: var(--muted); letter-spacing: .15em;
+      z-index: 2; animation: fadeSlideUp .8s .7s ease both;
+    }
+
+    .scroll-line {
+      width: 1px; height: 40px; background: var(--muted);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { transform: scaleY(1); opacity: .5; }
+      50%       { transform: scaleY(.4); opacity: 1; }
+    }
+
+    /* ────────────────────────────────
+       FLOATING ICON BADGES  (CSS transforms)
+    ──────────────────────────────── */
+    .floating-badges {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    }
+
+    .badge {
+      position: absolute;
+      width: 52px; height: 52px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .badge:nth-child(1) { top: 18%; right: 12%; color: var(--accent);  animation-delay: 0s;   transform: rotate(12deg); }
+    .badge:nth-child(2) { top: 55%; right: 22%; color: var(--accent2); animation-delay: 1.5s; transform: rotate(-8deg); }
+    .badge:nth-child(3) { top: 32%; right: 5%;  color: var(--accent3); animation-delay: 3s;   transform: rotate(20deg); }
+    .badge:nth-child(4) { top: 72%; right: 10%; color: var(--accent);  animation-delay: 2s;   transform: rotate(-15deg); }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0)    rotate(var(--r, 12deg)); }
+      50%       { transform: translateY(-18px) rotate(var(--r, 12deg)); }
+    }
+
+    /* ────────────────────────────────
+       SECTION WRAPPER
+    ──────────────────────────────── */
+    section {
+      padding: 6rem 2rem;
+      max-width: 1100px; margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: var(--ff-mono); font-size: .7rem;
+      letter-spacing: .25em; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-family: var(--ff-head); font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700; line-height: 1.1;
+      margin-bottom: 2.5rem;
+    }
+
+    h2 span { color: var(--accent); }
+
+    /* ────────────────────────────────
+       MULTI-COLUMN TEXT  (CSS3 columns)
+    ──────────────────────────────── */
+    .multi-col-section { background: var(--surface); padding: 6rem 2rem; }
+    .multi-col-section > .inner { max-width: 1100px; margin: 0 auto; }
+
+    .columns-text {
+      column-count: 3;
+      column-gap: 2.5rem;
+      column-rule: 1px solid var(--border);
+      text-align: justify;
+      font-size: 1rem; line-height: 1.8; color: var(--text);
+    }
+
+    .columns-text .drop-cap::first-letter {
+      font-family: var(--ff-head);
+      font-size: 4.5rem; font-weight: 700;
+      float: left; line-height: .75;
+      margin: .1em .15em 0 0;
+      color: var(--accent);
+    }
+
+    .col-quote {
+      column-span: all;
+      font-family: var(--ff-head); font-style: italic;
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+      text-align: center; color: var(--accent);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 0; margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .columns-text { column-count: 1; }
+    }
+
+    @media (min-width: 480px) and (max-width: 768px) {
+      .columns-text { column-count: 2; }
+    }
+
+    /* ────────────────────────────────
+       FEATURE CARDS  (transforms on hover)
+    ──────────────────────────────── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative; overflow: hidden;
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1),
+                  box-shadow .35s ease,
+                  border-color .35s ease;
+      cursor: default;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,.03));
+      opacity: 0; transition: opacity .35s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) rotate(.5deg);
+      box-shadow: 0 24px 48px rgba(0,0,0,.4);
+      border-color: var(--accent);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 48px; height: 48px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 1.2rem;
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1), background .35s;
+    }
+
+    .card:hover .card-icon { transform: rotate(-12deg) scale(1.1); background: var(--accent); color: #0a0a0f; }
+
+    .card h3 { font-family: var(--ff-head); font-size: 1.25rem; margin-bottom: .5rem; }
+    .card p  { font-size: .9rem; color: var(--muted); line-height: 1.6; }
+
+    .card-number {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      font-family: var(--ff-mono); font-size: .65rem;
+      color: var(--border); letter-spacing: .1em;
+    }
+
+    /* ────────────────────────────────
+       STATS ROW  (count-up effect via CSS)
+    ──────────────────────────────── */
+    .stats-strip {
+      background: var(--accent); color: #0a0a0f;
+      padding: 3.5rem 2rem;
+    }
+
+    .stats-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 2rem; text-align: center;
+    }
+
+    .stat-num {
+      font-family: var(--ff-head); font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700; line-height: 1; display: block;
+    }
+
+    .stat-label {
+      font-family: var(--ff-mono); font-size: .72rem;
+      letter-spacing: .2em; text-transform: uppercase;
+      opacity: .7;
+    }
+
+    .stat-item {
+      transition: transform .3s ease;
+    }
+
+    .stat-item:hover { transform: scale(1.08); }
+
+    /* ────────────────────────────────
+       SKILLS / PROGRESS BARS  (CSS animations)
+    ──────────────────────────────── */
+    .skills-section { background: var(--surface); padding: 6rem 2rem; }
+    .skills-section > .inner { max-width: 1100px; margin: 0 auto; }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .skill-item { margin-bottom: 1.4rem; }
+
+    .skill-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: .5rem;
+    }
+
+    .skill-name {
+      font-family: var(--ff-mono); font-size: .78rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      display: flex; align-items: center; gap: .5rem;
+    }
+
+    .skill-name i { color: var(--accent); }
+
+    .skill-pct {
+      font-family: var(--ff-mono); font-size: .72rem; color: var(--muted);
+    }
+
+    .bar-track {
+      height: 3px; background: rgba(255,255,255,.07); position: relative;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      position: absolute; top: 0; left: 0; height: 100%;
+      background: var(--accent);
+      width: 0; animation: barGrow 1.4s cubic-bezier(.4,0,.2,1) forwards;
+      animation-play-state: paused;
+    }
+
+    .bar-fill.animate { animation-play-state: running; }
+
+    .bar-fill.accent2 { background: var(--accent2); }
+    .bar-fill.accent3 { background: var(--accent3); }
+
+    @keyframes barGrow {
+      to { width: var(--w); }
+    }
+
+    /* ────────────────────────────────
+       CSS TRANSFORM SHOWCASE  (3D)
+    ──────────────────────────────── */
+    .transform-showcase {
+      padding: 6rem 2rem;
+      perspective: 1000px;
+    }
+
+    .transform-showcase > .inner { max-width: 1100px; margin: 0 auto; }
+
+    .cube-wrapper {
+      display: flex; justify-content: center;
+      margin: 4rem 0; perspective: 600px;
+    }
+
+    .cube {
+      width: 100px; height: 100px;
+      transform-style: preserve-3d;
+      animation: spinCube 8s linear infinite;
+      position: relative;
+    }
+
+    .face {
+      position: absolute; width: 100px; height: 100px;
+      border: 1px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ff-mono); font-size: .7rem;
+      letter-spacing: .1em; color: var(--accent);
+    }
+
+    .face.front  { background: rgba(240,192,64,.05);  transform: translateZ(50px); }
+    .face.back   { background: rgba(90,240,192,.05);  transform: rotateY(180deg) translateZ(50px); color: var(--accent3); border-color: var(--accent3); }
+    .face.right  { background: rgba(224,90,90,.05);   transform: rotateY(90deg)  translateZ(50px); color: var(--accent2); border-color: var(--accent2); }
+    .face.left   { background: rgba(240,192,64,.05);  transform: rotateY(-90deg) translateZ(50px); }
+    .face.top    { background: rgba(90,240,192,.05);  transform: rotateX(90deg)  translateZ(50px); color: var(--accent3); border-color: var(--accent3); }
+    .face.bottom { background: rgba(224,90,90,.05);   transform: rotateX(-90deg) translateZ(50px); color: var(--accent2); border-color: var(--accent2); }
+
+    @keyframes spinCube {
+      0%   { transform: rotateX(10deg)  rotateY(0deg); }
+      100% { transform: rotateX(10deg)  rotateY(360deg); }
+    }
+
+    .transform-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+
+    .t-card {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 1.8rem; text-align: center;
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+      cursor: default;
+    }
+
+    .t-card:nth-child(1):hover { transform: skewX(-8deg) scale(1.05); }
+    .t-card:nth-child(2):hover { transform: rotate(-5deg) scale(1.05); }
+    .t-card:nth-child(3):hover { transform: perspective(400px) rotateY(15deg); }
+    .t-card:nth-child(4):hover { transform: scaleX(.9) scaleY(1.1); }
+
+    .t-card i { font-size: 2rem; color: var(--accent); display: block; margin-bottom: 1rem; }
+    .t-card h4 { font-family: var(--ff-mono); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .5rem; color: var(--accent3); }
+    .t-card p { font-size: .85rem; color: var(--muted); }
+
+    /* ────────────────────────────────
+       ICON GRID
+    ──────────────────────────────── */
+    .icon-grid-section { background: var(--surface); padding: 6rem 2rem; }
+    .icon-grid-section > .inner { max-width: 1100px; margin: 0 auto; }
+
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 1rem; margin-top: 2rem;
+    }
+
+    .icon-cell {
+      aspect-ratio: 1;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: .4rem;
+      cursor: default;
+      transition: transform .3s ease, background .3s, border-color .3s;
+      font-size: 1.3rem; color: var(--muted);
+    }
+
+    .icon-cell span {
+      font-family: var(--ff-mono); font-size: .55rem;
+      letter-spacing: .05em; color: var(--muted);
+    }
+
+    .icon-cell:hover {
+      transform: translateY(-6px) rotate(8deg);
+      background: var(--accent); color: #0a0a0f;
+      border-color: var(--accent);
+    }
+
+    .icon-cell:hover span { color: #0a0a0f; }
+
+    /* ────────────────────────────────
+       KEYFRAME ANIMATION DEMO
+    ──────────────────────────────── */
+    .anim-demo-section { padding: 6rem 2rem; }
+    .anim-demo-section > .inner { max-width: 1100px; margin: 0 auto; }
+
+    .anim-row {
+      display: flex; flex-wrap: wrap; gap: 2rem;
+      align-items: center; justify-content: center;
+      margin-top: 3rem;
+    }
+
+    .anim-box {
+      width: 80px; height: 80px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; position: relative;
+    }
+
+    .anim-box .lbl {
+      position: absolute; bottom: -1.8rem; left: 50%; transform: translateX(-50%);
+      font-family: var(--ff-mono); font-size: .6rem; white-space: nowrap;
+      color: var(--muted); letter-spacing: .08em;
+    }
+
+    .a-pulse  { animation: pulse  2s ease-in-out infinite; color: var(--accent); }
+    .a-spin   { animation: spin   3s linear infinite;       color: var(--accent3); }
+    .a-bounce { animation: bounce 1.2s ease infinite;        color: var(--accent2); }
+    .a-shake  { animation: shake  .8s ease-in-out infinite; color: var(--accent); }
+    .a-morph  { animation: morph  4s ease-in-out infinite;  background: var(--accent); color: #0a0a0f; border: none; }
+    .a-fade   { animation: fadeInOut 2s ease-in-out infinite; color: var(--accent3); }
+
+    @keyframes pulse   { 0%,100%{transform:scale(1)}50%{transform:scale(1.2);box-shadow:0 0 24px rgba(240,192,64,.4)} }
+    @keyframes spin    { to{transform:rotate(360deg)} }
+    @keyframes bounce  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+    @keyframes shake   { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    @keyframes morph   { 0%,100%{border-radius:0} 33%{border-radius:50%} 66%{border-radius:0 50% 50% 0} }
+    @keyframes fadeInOut{ 0%,100%{opacity:.2} 50%{opacity:1} }
+
+    /* ────────────────────────────────
+       FOOTER
+    ──────────────────────────────── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    footer .footer-inner { max-width: 1100px; margin: 0 auto; }
+
+    .footer-logo {
+      font-family: var(--ff-head); font-size: 1.8rem;
+      color: var(--accent); margin-bottom: 1rem;
+    }
+
+    .footer-links {
+      display: flex; justify-content: center; gap: 1.5rem;
+      flex-wrap: wrap; margin-bottom: 1.5rem;
+    }
+
+    .footer-links a {
+      color: var(--muted); text-decoration: none;
+      font-family: var(--ff-mono); font-size: .72rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      transition: color .2s;
+    }
+
+    .footer-links a:hover { color: var(--accent3); }
+
+    .social-icons {
+      display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;
+    }
+
+    .social-icons a {
+      width: 40px; height: 40px;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); text-decoration: none;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .3s ease, background .3s, color .3s;
+    }
+
+    .social-icons a:hover {
+      transform: translateY(-4px) rotate(10deg);
+      background: var(--accent); color: #0a0a0f;
+      border-color: var(--accent);
+    }
+
+    .footer-note {
+      font-family: var(--ff-mono); font-size: .65rem;
+      color: var(--muted); letter-spacing: .1em;
+    }
+
+    /* ────────────────────────────────
+       SHARED ANIMATION
+    ──────────────────────────────── */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scroll-reveal utility */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1; transform: translateY(0);
+    }
+
+    /* ────────────────────────────────
+       NAV
+    ──────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.2rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(10,10,15,.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-brand {
+      font-family: var(--ff-head); font-size: 1.25rem; color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex; gap: 2rem; list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--ff-mono); font-size: .72rem;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+    }
+
+    /* ────────────────────────────────
+       DIVIDER
+    ──────────────────────────────── */
+    .divider {
+      max-width: 1100px; margin: 0 auto;
+      border: none; border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">CSS³</div>
+  <ul class="nav-links">
+    <li><a href="#columns">Columns</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#transforms">Transforms</a></li>
+    <li><a href="#animations">Animations</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header>
+  <div class="hero-stripe"></div>
+  <div class="floating-badges">
+    <div class="badge"><i class="fa-brands fa-css3-alt"></i></div>
+    <div class="badge"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+    <div class="badge"><i class="fa-solid fa-cube"></i></div>
+    <div class="badge"><i class="fa-solid fa-palette"></i></div>
+  </div>
+  <div class="hero-content">
+    <span class="hero-tag"><i class="fa-solid fa-circle-dot"></i> CSS3 Feature Showcase</span>
+    <h1>The Power of <em>Modern CSS</em></h1>
+    <p class="hero-sub">A fully responsive demonstration of CSS3's most expressive capabilities — columns, animations, transforms, custom fonts, and icon systems, all in pure CSS.</p>
+    <div class="btn-row">
+      <a href="#columns" class="btn btn-primary"><i class="fa-solid fa-arrow-down"></i> Explore</a>
+      <a href="#animations" class="btn btn-ghost"><i class="fa-solid fa-play"></i> Animations</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>SCROLL</span>
+  </div>
+</header>
+
+<!-- MULTI COLUMN TEXT -->
+<div class="multi-col-section" id="columns">
+  <div class="inner">
+    <div class="reveal">
+      <p class="section-label"><i class="fa-solid fa-table-columns"></i> CSS3 Multi-Column Layout</p>
+      <h2>Editorial <span>Typography</span></h2>
+    </div>
+    <div class="columns-text reveal">
+      <p class="drop-cap">CSS3 multi-column layout brings the elegance of magazine and newspaper typography to the web. Text flows naturally across multiple columns, just as it does in print design, giving long-form content rhythm and structure that a single column cannot achieve.</p>
+      <p>The <code>column-count</code> and <code>column-gap</code> properties give developers fine-grained control over column width and spacing, while <code>column-rule</code> renders subtle dividers between them — exactly as you see here. This layout responds intelligently to screen size.</p>
+
+      <blockquote class="col-quote">"Design is intelligence made visible — and CSS3 is how we express it on the web."</blockquote>
+
+      <p>The drop-cap on the opening paragraph is achieved entirely with the CSS <code>::first-letter</code> pseudo-element — no JavaScript needed. Pair it with the <code>column-span: all</code> property to create pull-quotes that span the full width of the layout, breaking the rhythm intentionally.</p>
+      <p>Responsive column design uses <code>column-count</code> inside media queries to gracefully collapse from three columns on desktop to two on tablet and a single column on mobile. The browser handles text reflow automatically, making this one of the most effortless responsive techniques available.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURE CARDS -->
+<section id="features">
+  <p class="section-label reveal"><i class="fa-solid fa-layer-group"></i> CSS3 Feature Set</p>
+  <h2 class="reveal">What Makes CSS3 <span>Powerful</span></h2>
+  <div class="cards-grid">
+    <div class="card reveal">
+      <span class="card-number">01</span>
+      <div class="card-icon"><i class="fa-solid fa-table-columns"></i></div>
+      <h3>Multi-Column</h3>
+      <p>Flow text across multiple columns just like print media, with full control over gaps, rules, and span behaviour.</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-number">02</span>
+      <div class="card-icon"><i class="fa-solid fa-font"></i></div>
+      <h3>Web Fonts</h3>
+      <p>Load any typeface via <code>@font-face</code> or Google Fonts. Pair display serifs with geometric mono fonts for striking contrast.</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-number">03</span>
+      <div class="card-icon"><i class="fa-solid fa-icons"></i></div>
+      <h3>Icon Systems</h3>
+      <p>Font Awesome delivers 2000+ crisp SVG icons as a scalable icon font — infinitely resizable, styleable with CSS.</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-number">04</span>
+      <div class="card-icon"><i class="fa-solid fa-film"></i></div>
+      <h3>Animations</h3>
+      <p><code>@keyframes</code> and <code>animation</code> properties produce fluid, hardware-accelerated motion directly in CSS.</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-number">05</span>
+      <div class="card-icon"><i class="fa-solid fa-rotate"></i></div>
+      <h3>Transforms</h3>
+      <p>Translate, rotate, scale, and skew elements in 2D and full 3D with <code>transform</code> and <code>perspective</code>.</p>
+    </div>
+    <div class="card reveal">
+      <span class="card-number">06</span>
+      <div class="card-icon"><i class="fa-solid fa-sliders"></i></div>
+      <h3>Transitions</h3>
+      <p>Smooth property interpolation between states using cubic-bezier timing functions for polished micro-interactions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <span class="stat-num">12+</span>
+      <span class="stat-label"><i class="fa-solid fa-wand-sparkles"></i> CSS3 Properties</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">100%</span>
+      <span class="stat-label"><i class="fa-solid fa-mobile-screen"></i> Responsive</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">0 JS</span>
+      <span class="stat-label"><i class="fa-brands fa-js"></i> Pure CSS Motion</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">2000+</span>
+      <span class="stat-label"><i class="fa-solid fa-icons"></i> Icon Glyphs</span>
+    </div>
+  </div>
+</div>
+
+<!-- SKILLS (progress bars) -->
+<div class="skills-section">
+  <div class="inner">
+    <p class="section-label reveal"><i class="fa-solid fa-chart-bar"></i> CSS3 Animated Progress Bars</p>
+    <h2 class="reveal">Skill <span>Meters</span></h2>
+    <div class="skills-grid">
+      <div>
+        <div class="skill-item reveal">
+          <div class="skill-header">
+            <span class="skill-name"><i class="fa-brands fa-css3-alt"></i> CSS Animations</span>
+            <span class="skill-pct">92%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="--w:92%"></div></div>
+        </div>
+        <div class="skill-item reveal">
+          <div class="skill-header">
+            <span class="skill-name"><i class="fa-solid fa-rotate"></i> Transforms</span>
+            <span class="skill-pct">88%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill accent3" style="--w:88%"></div></div>
+        </div>
+        <div class="skill-item reveal">
+          <div class="skill-header">
+            <span class="skill-name"><i class="fa-solid fa-table-columns"></i> Multi-Column</span>
+            <span class="skill-pct">76%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill accent2" style="--w:76%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="skill-item reveal">
+          <div class="skill-header">
+            <span class="skill-name"><i class="fa-solid fa-font"></i> Web Typography</span>
+            <span class="skill-pct">95%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill accent3" style="--w:95%"></div></div>
+        </div>
+        <div class="skill-item reveal">
+          <div class="skill-header">
+            <span class="skill-name"><i class="fa-solid fa-cubes"></i> CSS Grid</span>
+            <span class="skill-pct">90%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="--w:90%"></div></div>
+        </div>
+        <div class="skill-item reveal">
+          <div class="skill-header">
+            <span class="skill-name"><i class="fa-solid fa-mobile-screen"></i> Responsive</span>
+            <span class="skill-pct">98%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill accent2" style="--w:98%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CSS 3D TRANSFORMS -->
+<section class="transform-showcase" id="transforms">
+  <div class="inner">
+    <p class="section-label reveal"><i class="fa-solid fa-cube"></i> CSS3 3D Transforms</p>
+    <h2 class="reveal">Rotate. Scale. <span>Warp Reality.</span></h2>
+
+    <div class="cube-wrapper">
+      <div class="cube">
+        <div class="face front">FRONT</div>
+        <div class="face back">BACK</div>
+        <div class="face right">RIGHT</div>
+        <div class="face left">LEFT</div>
+        <div class="face top">TOP</div>
+        <div class="face bottom">BTOM</div>
+      </div>
+    </div>
+
+    <div class="transform-cards">
+      <div class="t-card reveal">
+        <i class="fa-solid fa-left-right"></i>
+        <h4>skewX</h4>
+        <p>Hover to apply a horizontal shear transformation to the element's geometry.</p>
+      </div>
+      <div class="t-card reveal">
+        <i class="fa-solid fa-rotate"></i>
+        <h4>rotate</h4>
+        <p>Hover to spin the element around its center point in 2D space.</p>
+      </div>
+      <div class="t-card reveal">
+        <i class="fa-solid fa-cube"></i>
+        <h4>rotateY 3D</h4>
+        <p>Hover to flip this card along its vertical axis using a perspective projection.</p>
+      </div>
+      <div class="t-card reveal">
+        <i class="fa-solid fa-up-down-left-right"></i>
+        <h4>scaleXY</h4>
+        <p>Hover to squeeze horizontally and stretch vertically — two axes, one transform.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ICON GRID -->
+<div class="icon-grid-section">
+  <div class="inner">
+    <p class="section-label reveal"><i class="fa-solid fa-grip"></i> Font Awesome Icon System</p>
+    <h2 class="reveal">Hover an <span>Icon</span></h2>
+    <div class="icon-grid reveal">
+      <div class="icon-cell"><i class="fa-solid fa-house"></i><span>house</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-bolt"></i><span>bolt</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-star"></i><span>star</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-heart"></i><span>heart</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-fire"></i><span>fire</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-rocket"></i><span>rocket</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-brain"></i><span>brain</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-atom"></i><span>atom</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-fingerprint"></i><span>print</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-dna"></i><span>dna</span></div>
+      <div class="icon-cell"><i class="fa-brands fa-github"></i><span>github</span></div>
+      <div class="icon-cell"><i class="fa-brands fa-python"></i><span>python</span></div>
+      <div class="icon-cell"><i class="fa-brands fa-react"></i><span>react</span></div>
+      <div class="icon-cell"><i class="fa-brands fa-figma"></i><span>figma</span></div>
+      <div class="icon-cell"><i class="fa-brands fa-linux"></i><span>linux</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-code"></i><span>code</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-terminal"></i><span>term</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-bug"></i><span>bug</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-shield-halved"></i><span>shield</span></div>
+      <div class="icon-cell"><i class="fa-solid fa-lock"></i><span>lock</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- KEYFRAME ANIMATION DEMOS -->
+<section class="anim-demo-section" id="animations">
+  <div class="inner">
+    <p class="section-label reveal"><i class="fa-solid fa-film"></i> CSS3 @keyframes Animations</p>
+    <h2 class="reveal">Motion in <span>Pure CSS</span></h2>
+    <div class="anim-row">
+      <div class="anim-box a-pulse"><i class="fa-solid fa-heart"></i><span class="lbl">PULSE</span></div>
+      <div class="anim-box a-spin" ><i class="fa-solid fa-gear"></i><span class="lbl">SPIN</span></div>
+      <div class="anim-box a-bounce"><i class="fa-solid fa-basketball"></i><span class="lbl">BOUNCE</span></div>
+      <div class="anim-box a-shake"><i class="fa-solid fa-bell"></i><span class="lbl">SHAKE</span></div>
+      <div class="anim-box a-morph"><i class="fa-solid fa-circle"></i><span class="lbl" style="color:var(--muted)">MORPH</span></div>
+      <div class="anim-box a-fade"><i class="fa-solid fa-eye"></i><span class="lbl">FADE</span></div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">CSS³</div>
+    <div class="social-icons">
+      <a href="#"><i class="fa-brands fa-github"></i></a>
+      <a href="#"><i class="fa-brands fa-twitter"></i></a>
+      <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+      <a href="#"><i class="fa-brands fa-codepen"></i></a>
+    </div>
+    <div class="footer-links">
+      <a href="#columns">Columns</a>
+      <a href="#features">Features</a>
+      <a href="#transforms">Transforms</a>
+      <a href="#animations">Animations</a>
+    </div>
+    <p class="footer-note">Built with CSS3 · <i class="fa-solid fa-heart" style="color:var(--accent2)"></i> Zero JavaScript Animations · Fully Responsive</p>
+  </div>
+</footer>
+
+<script>
+  // Scroll-reveal observer
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: .15 });
+  reveals.forEach(el => obs.observe(el));
+
+  // Trigger progress bars on scroll
+  const bars = document.querySelectorAll('.bar-fill');
+  const barObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('animate');
+        barObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: .5 });
+  bars.forEach(b => barObs.observe(b));
+</script>
+
+</body>
+</html>
